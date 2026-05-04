@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pixel Patriots • American History</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        body {
+            font-family: 'Press Start 2P', system-ui;
+        }
+        
+        .pixel-border {
+            image-rendering: pixelated;
+            border: 8px solid #000;
+            box-shadow: 0 0 0 8px #fff;
+        }
+        
+        .hero-bg {
+            background: linear-gradient(135deg, #ff0000, #0000ff, #ffff00);
+        }
+        
+        .card {
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: scale(1.08) rotate(2deg);
+            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3);
+        }
+        
+        .scanline {
+            position: relative;
+        }
+        .scanline::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(
+                to bottom,
+                transparent 50%,
+                rgba(255,255,255,0.1) 50%
+            );
+            background-size: 100% 4px;
+            pointer-events: none;
+            animation: scan 4s linear infinite;
+        }
+        
+        @keyframes scan {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 200px; }
+        }
+    </style>
+</head>
+<body class="bg-black text-white">
+    <!-- Navbar -->
+    <nav class="bg-black border-b-4 border-white sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <span class="text-3xl">🕹️</span>
+                <h1 class="text-2xl tracking-widest">PIXEL PATRIOTS</h1>
+            </div>
+            <div class="flex gap-8 text-sm">
+                <a href="#gallery" class="hover:text-yellow-400 transition-colors">GALLERY</a>
+                <a href="#about" class="hover:text-yellow-400 transition-colors">HISTORY</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero-bg py-20 text-center scanline">
+        <div class="max-w-4xl mx-auto px-6">
+            <h2 class="text-5xl mb-4 tracking-widest">RETRO • HISTORY • LEGENDS</h2>
+            <p class="text-xl mb-8 text-yellow-300">16-Bit American Heroes</p>
+            
+            <img id="main-image" 
+                 src="https://i.imgur.com/placeholder.jpg" 
+                 alt="Pixel Art American Historical Figures" 
+                 class="pixel-border mx-auto max-w-2xl w-full rounded-none">
+            
+            <p class="mt-6 text-sm text-gray-300 max-w-md mx-auto">
+                16-bit RPG style portraits of legendary Americans
+            </p>
+        </div>
+    </header>
+
+    <!-- Gallery -->
+    <section id="gallery" class="py-16 bg-zinc-950">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-4xl text-center mb-12 text-yellow-400 tracking-widest">THE LEGENDS</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="card bg-zinc-900 border-4 border-white p-6">
+                    <div class="h-64 bg-zinc-800 flex items-center justify-center mb-6 overflow-hidden">
+                        <span class="text-6xl">🧓</span>
+                    </div>
+                    <h3 class="text-2xl mb-2">Benjamin Franklin</h3>
+                    <p class="text-yellow-400 text-sm mb-4">1706 — 1790</p>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Inventor, scientist, diplomat, and Founding Father. 
+                        Known for discovering electricity principles and signing the Declaration of Independence.
+                    </p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="card bg-zinc-900 border-4 border-white p-6">
+                    <div class="h-64 bg-zinc-800 flex items-center justify-center mb-6 overflow-hidden">
+                        <span class="text-6xl">⛵</span>
+                    </div>
+                    <h3 class="text-2xl mb-2">John Paul Jones</h3>
+                    <p class="text-yellow-400 text-sm mb-4">1747 — 1792</p>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Naval hero of the American Revolution. Famous for the quote: 
+                        "I have not yet begun to fight!"
+                    </p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="card bg-zinc-900 border-4 border-white p-6">
+                    <div class="h-64 bg-zinc-800 flex items-center justify-center mb-6 overflow-hidden">
+                        <span class="text-6xl">🎖️</span>
+                    </div>
+                    <h3 class="text-2xl mb-2">George Washington</h3>
+                    <p class="text-yellow-400 text-sm mb-4">1732 — 1799</p>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Commander of the Continental Army and the first President of the United States.
+                        The "Father of His Country".
+                    </p>
+                </div>
+
+                <!-- Card 4 -->
+                <div class="card bg-zinc-900 border-4 border-white p-6">
+                    <div class="h-64 bg-zinc-800 flex items-center justify-center mb-6 overflow-hidden">
+                        <span class="text-6xl">📜</span>
+                    </div>
+                    <h3 class="text-2xl mb-2">Thomas Jefferson</h3>
+                    <p class="text-yellow-400 text-sm mb-4">1743 — 1826</p>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Principal author of the Declaration of Independence and third President of the United States.
+                    </p>
+                </div>
+
+                <!-- Card 5 -->
+                <div class="card bg-zinc-900 border-4 border-white p-6">
+                    <div class="h-64 bg-zinc-800 flex items-center justify-center mb-6 overflow-hidden">
+                        <span class="text-6xl">🛡️</span>
+                    </div>
+                    <h3 class="text-2xl mb-2">Harriet Tubman</h3>
+                    <p class="text-yellow-400 text-sm mb-4">1822 — 1913</p>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        Abolitionist and political activist. Escaped slavery and led hundreds to freedom via the Underground Railroad.
+                    </p>
+                </div>
+
+                <!-- Card 6 -->
+                <div class="card bg-zinc-900 border-4 border-white p-6">
+                    <div class="h-64 bg-zinc-800 flex items-center justify-center mb-6 overflow-hidden">
+                        <span class="text-6xl">🇺🇸</span>
+                    </div>
+                    <h3 class="text-2xl mb-2">Abraham Lincoln</h3>
+                    <p class="text-yellow-400 text-sm mb-4">1809 — 1865</p>
+                    <p class="text-gray-300 text-sm leading-relaxed">
+                        16th President of the United States. Led the nation through the Civil War and abolished slavery.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-black py-12 border-t-4 border-white">
+        <div class="max-w-6xl mx-auto px-6 text-center">
+            <p class="text-sm text-gray-500">
+                Made with ❤️ for retro gaming &amp; American history<br>
+                Educational demo website • 2026
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Replace this with your actual image URL after saving the image
+        const mainImage = document.getElementById('main-image');
+        
+        // For now using a placeholder. Replace the src below with your image link
+        mainImage.src = "https://i.imgur.com/REPLACE_WITH_YOUR_IMAGE_LINK.jpg"; 
+        
+        // Optional: Simple click to enlarge
+        mainImage.addEventListener('click', () => {
+            window.open(mainImage.src, '_blank');
+        });
+        
+        // Tailwind script already loaded
+        console.log("%cPixel Patriots website loaded successfully! 🕹️", "color: yellow; font-family: monospace");
+    </script>
+</body>
+</html>
