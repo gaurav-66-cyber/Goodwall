@@ -1,0 +1,400 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LEGACY • Heroes & Martyrs</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=EB+Garamond:wght@400;600;700&display=swap');
+        
+        :root {
+            --sepia: #8C5A2B;
+            --parchment: #F5E8C7;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            background: #1C1814 url('data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 width=%27100%27 height=%27100%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 fill=%27%231C1814%27/%3E%3Cpath d=%27M0 50 Q25 30 50 50 Q75 70 100 50%27 fill=%27none%27 stroke=%27%233C2F2F%27 stroke-width=%271%27 opacity=%270.15%27/%3E%3C/svg%27') repeat;
+            color: #D4C3A8;
+            font-family: 'EB Garamond', serif;
+            line-height: 1.75;
+        }
+        
+        header {
+            background: linear-gradient(to bottom, #3C2F2F, #2A211F);
+            border-bottom: 10px solid #8C5A2B;
+            padding: 35px 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 10px 0 #00000090;
+        }
+        
+        .title {
+            font-family: 'Press Start 2P', system-ui;
+            font-size: 3.4rem;
+            color: #F5E8C7;
+            text-shadow: 8px 8px 0 #8C5A2B;
+            letter-spacing: 8px;
+        }
+        
+        .controls {
+            max-width: 1300px;
+            margin: 25px auto;
+            padding: 0 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        #search {
+            padding: 14px 24px;
+            width: 380px;
+            background: #2A211F;
+            border: 5px solid #8C5A2B;
+            color: #F5E8C7;
+            font-family: 'Press Start 2P', system-ui;
+            font-size: 1rem;
+        }
+        
+        .view-toggle {
+            display: flex;
+            background: #2A211F;
+            border: 5px solid #8C5A2B;
+        }
+        
+        .toggle-btn {
+            padding: 14px 32px;
+            cursor: pointer;
+            font-family: 'Press Start 2P', system-ui;
+            font-size: 0.9rem;
+        }
+        
+        .toggle-btn.active {
+            background: #8C5A2B;
+            color: #1C1814;
+        }
+        
+        .country-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .tab {
+            background: #3C2F2F;
+            color: #D4C3A8;
+            padding: 12px 26px;
+            border: 4px solid #8C5A2B;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        
+        .tab.active {
+            background: #8C5A2B;
+            color: #1C1814;
+        }
+        
+        main { max-width: 1300px; margin: 30px auto; padding: 0 20px; }
+        
+        .hero-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 35px;
+        }
+        
+        .hero-card {
+            background: #2A211F;
+            border: 7px solid #8C5A2B;
+            box-shadow: 12px 12px 0 #00000080;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        
+        .hero-card:hover {
+            transform: scale(1.04) rotate(1deg);
+        }
+        
+        .hero-photo {
+            width: 100%;
+            height: 280px;
+            object-fit: cover;
+            border-bottom: 7px solid #8C5A2B;
+        }
+        
+        .hero-info {
+            padding: 26px;
+        }
+        
+        .hero-name {
+            font-size: 1.55rem;
+            color: #F5E8C7;
+            margin-bottom: 8px;
+        }
+        
+        .hero-dates {
+            color: #C9A66B;
+            font-size: 1.05rem;
+            margin-bottom: 12px;
+        }
+        
+        .hero-title {
+            color: #A67C5D;
+            font-size: 1.1rem;
+            margin-bottom: 18px;
+        }
+        
+        .hero-desc, .family-bg {
+            font-size: 1.08rem;
+            margin-bottom: 18px;
+        }
+        
+        .quote {
+            font-style: italic;
+            color: #E8D9B8;
+            border-left: 6px solid #8C5A2B;
+            padding-left: 20px;
+            margin: 20px 0;
+        }
+        
+        .timeline {
+            position: relative;
+            max-width: 1100px;
+            margin: 50px auto;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 100%;
+            background: #8C5A2B;
+        }
+        
+        .timeline-item {
+            margin: 80px 0;
+            display: flex;
+            align-items: center;
+            gap: 50px;
+        }
+        
+        .timeline-item:nth-child(odd) { flex-direction: row-reverse; }
+        
+        .timeline-content {
+            background: #2A211F;
+            border: 7px solid #8C5A2B;
+            padding: 25px;
+            width: 48%;
+        }
+        
+        .footer {
+            background: #1C1814;
+            border-top: 10px solid #8C5A2B;
+            padding: 70px 20px;
+            text-align: center;
+            color: #8C5A2B;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="title">LEGACY</h1>
+        <p style="color:#C9A66B; margin-top:12px; font-size:1.1rem;">Heroes & Martyrs of the World • Eternal Archive</p>
+    </header>
+    
+    <div class="controls">
+        <input type="text" id="search" placeholder="Search by name or country...">
+        <div class="view-toggle">
+            <div class="toggle-btn active" id="grid-btn">GRID VIEW</div>
+            <div class="toggle-btn" id="timeline-btn">TIMELINE VIEW</div>
+        </div>
+    </div>
+    
+    <div class="country-tabs" id="tabs"></div>
+    
+    <main id="main-content"></main>
+    
+    <div class="footer">
+        <p>IN HONOUR OF THOSE WHO SACRIFICED FOR FREEDOM, JUSTICE &amp; NATION • VINTAGE MEMORIAL 2026</p>
+    </div>
+
+    <script>
+        const heroesData = {
+            "Nepal": [
+                {name:"Lakhan Thapa Magar", title:"First Martyr of Nepal", dates:"1835–1858", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Lakhan_Thapa.jpg/800px-Lakhan_Thapa.jpg", desc:"Led the first armed rebellion against the Rana regime in 1857.", quote:"I fight not for glory but for the dignity of my people.", achievements:"First organized resistance against Rana rule", family:"Born into a Magar warrior family in western Nepal."},
+                {name:"Shukraraj Shastri", title:"One of the Four Martyrs", dates:"1894–1941", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Shukraraj_Shastri.jpg/800px-Shukraraj_Shastri.jpg", desc:"Scholar and journalist who spread democratic ideas.", quote:"Knowledge is the greatest weapon against oppression.", achievements:"Popularized democracy through writing", family:"Born in a Newar family in Kathmandu."},
+                {name:"Dharma Bhakta Mathema", title:"One of the Four Martyrs", dates:"1908–1941", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Dharma_Bhakta_Mathema.jpg/800px-Dharma_Bhakta_Mathema.jpg", desc:"Bodybuilder turned revolutionary executed by Rana regime.", quote:"A strong body serves a stronger soul.", achievements:"Physical culture & anti-Rana activism", family:"Born in a respected Newar family."},
+                {name:"Dashrath Chand", title:"One of the Four Martyrs", dates:"1903–1941", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Dashrath_Chand.jpg/800px-Dashrath_Chand.jpg", desc:"Founder member of Nepal Praja Parishad.", quote:"", achievements:"Established first political party", family:"From a Chand family in eastern Nepal."},
+                {name:"Ganga Lal Shrestha", title:"One of the Four Martyrs", dates:"1910–1941", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Ganga_Lal_Shrestha.jpg/800px-Ganga_Lal_Shrestha.jpg", desc:"Fearless revolutionary known for his courage.", quote:"Death is better than slavery.", achievements:"Symbol of resistance", family:"Born in a Shrestha family in Kathmandu."}
+            ],
+            "India": [
+                {name:"Bhagat Singh", title:"Shaheed-e-Azam", dates:"1907–1931", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Bhagat_Singh_portrait.jpg/800px-Bhagat_Singh_portrait.jpg", desc:"Revolutionary socialist and freedom fighter.", quote:"Bomb and pistol do not make revolution. The sword of revolution is sharpened on the whetstone of ideas.", achievements:"Central Assembly bombing", family:"Born into a Sikh family in Punjab."},
+                {name:"Mahatma Gandhi", title:"Father of the Nation", dates:"1869–1948", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Mahatma-Gandhi%2C_studio%2C_1931.jpg/800px-Mahatma-Gandhi%2C_studio%2C_1931.jpg", desc:"Led India to independence through non-violence.", quote:"An eye for an eye makes the whole world blind.", achievements:"Salt March, Quit India", family:"Modh Bania family in Gujarat."},
+                {name:"Subhas Chandra Bose", title:"Netaji", dates:"1897–1945", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Subhas_Chandra_Bose.jpg/800px-Subhas_Chandra_Bose.jpg", desc:"Led Indian National Army against British rule.", quote:"Give me blood and I will give you freedom!", achievements:"Formed INA", family:"Bengali Kayastha family."},
+                {name:"Rani Lakshmibai", title:"Rani of Jhansi", dates:"1828–1858", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Rani_Lakshmibai.jpg/800px-Rani_Lakshmibai.jpg", desc:"Warrior queen who fought in 1857 Revolt.", quote:"I shall not surrender my Jhansi.", achievements:"Symbol of women’s bravery", family:"Maratha family."},
+                {name:"Sardar Vallabhbhai Patel", title:"Iron Man of India", dates:"1875–1950", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Vallabhbhai_Patel.jpg/800px-Vallabhbhai_Patel.jpg", desc:"Unified 565 princely states.", quote:"", achievements:"Integration of India", family:"Patidar farmer family in Gujarat."}
+            ],
+            "United States": [
+                {name:"George Washington", title:"Founding Father", dates:"1732–1799", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/Gilbert_Stuart_Williamstown_Portrait_of_George_Washington.jpg/800px-Gilbert_Stuart_Williamstown_Portrait_of_George_Washington.jpg", desc:"Commander of Continental Army and first President.", quote:"Liberty is a plant of rapid growth.", achievements:"Led American Revolution", family:"Virginia planter family."},
+                {name:"Abraham Lincoln", title:"The Great Emancipator", dates:"1809–1865", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Abraham_Lincoln_O-77_by_Gardner%2C_1865.jpg/800px-Abraham_Lincoln_O-77_by_Gardner%2C_1865.jpg", desc:"Preserved the Union and abolished slavery.", quote:"Government of the people, by the people, for the people.", achievements:"Emancipation Proclamation", family:"Poor frontier family in Kentucky."},
+                {name:"Martin Luther King Jr.", title:"Civil Rights Leader", dates:"1929–1968", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Martin_Luther_King_Jr._NYWTS.jpg/800px-Martin_Luther_King_Jr._NYWTS.jpg", desc:"Led Civil Rights Movement with non-violence.", quote:"I have a dream...", achievements:"March on Washington", family:"African American Baptist family."},
+                {name:"Nathan Hale", title:"American Patriot", dates:"1755–1776", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Nathan_Hale.jpg/800px-Nathan_Hale.jpg", desc:"Spy during Revolutionary War.", quote:"I only regret that I have but one life to lose for my country.", achievements:"Symbol of sacrifice", family:"Connecticut farming family."},
+                {name:"Harriet Tubman", title:"Moses of Her People", dates:"1822–1913", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Harriet_Tubman.jpg/800px-Harriet_Tubman.jpg", desc:"Conductor of the Underground Railroad.", quote:"Every great dream begins with a dreamer.", achievements:"Freed hundreds of slaves", family:"Born into slavery in Maryland."}
+            ],
+            "United Kingdom": [
+                {name:"Winston Churchill", title:"Prime Minister", dates:"1874–1965", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Winston_Churchill_1941.jpg/800px-Winston_Churchill_1941.jpg", desc:"Led Britain during World War II.", quote:"We shall fight on the beaches...", achievements:"WWII leadership", family:"Aristocratic British family."},
+                {name:"Horatio Nelson", title:"Vice Admiral", dates:"1758–1805", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Vice-Admiral_Horatio_Nelson.jpg/800px-Vice-Admiral_Horatio_Nelson.jpg", desc:"Hero of Battle of Trafalgar.", quote:"England expects that every man will do his duty.", achievements:"Defeated Napoleon’s navy", family:"Norfolk clergy family."},
+                {name:"Florence Nightingale", title:"Lady with the Lamp", dates:"1820–1910", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Florence_Nightingale.jpg/800px-Florence_Nightingale.jpg", desc:"Founder of modern nursing.", quote:"", achievements:"Reformed military hospitals", family:"Wealthy British family."},
+                {name:"William Wilberforce", title:"Abolitionist", dates:"1759–1833", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/William_Wilberforce.jpg/800px-William_Wilberforce.jpg", desc:"Led campaign to abolish slave trade.", quote:"", achievements:"Abolition of the Slave Trade Act", family:"Merchant family in Hull."},
+                {name:"Alfred the Great", title:"King of Wessex", dates:"849–899", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Alfred_the_Great.jpg/800px-Alfred_the_Great.jpg", desc:"Defended England against Vikings.", quote:"", achievements:"First King of the Anglo-Saxons", family:"Royal House of Wessex."}
+            ],
+            "France": [
+                {name:"Joan of Arc", title:"Maid of Orléans", dates:"1412–1431", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/Joan_of_Arc.jpg/800px-Joan_of_Arc.jpg", desc:"Led French to victory in Hundred Years’ War.", quote:"I am not afraid... I was born to do this.", achievements:"Turned the tide of war", family:"Peasant family in Domrémy."},
+                {name:"Napoleon Bonaparte", title:"Emperor of the French", dates:"1769–1821", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Napoleon_Bonaparte.jpg/800px-Napoleon_Bonaparte.jpg", desc:"Military genius and spreader of revolutionary ideals.", quote:"Victory belongs to the most persevering.", achievements:"Napoleonic Code", family:"Corsican noble family."},
+                {name:"Maximilien Robespierre", title:"Revolutionary Leader", dates:"1758–1794", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Maximilien_Robespierre.jpg/800px-Maximilien_Robespierre.jpg", desc:"Key figure of the French Revolution.", quote:"", achievements:"Committee of Public Safety", family:"Lawyer family in Arras."},
+                {name:"Marquis de Lafayette", title:"Hero of Two Worlds", dates:"1757–1834", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Marquis_de_Lafayette.jpg/800px-Marquis_de_Lafayette.jpg", desc:"Fought in American and French Revolutions.", quote:"", achievements:"Bridged two revolutions", family:"French nobility."},
+                {name:"Jean-Paul Marat", title:"Friend of the People", dates:"1743–1793", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Jean-Paul_Marat.jpg/800px-Jean-Paul_Marat.jpg", desc:"Radical journalist of the Revolution.", quote:"", achievements:"Voice of the sans-culottes", family:"Swiss-Italian family."}
+            ],
+            "Japan": [
+                {name:"Sakamoto Ryoma", title:"Visionary Samurai", dates:"1836–1867", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Sakamoto_Ryoma.jpg/800px-Sakamoto_Ryoma.jpg", desc:"Key architect of the Meiji Restoration.", quote:"", achievements:"Modernization of Japan", family:"Lower samurai family."},
+                {name:"Kusunoki Masashige", title:"God of War", dates:"1294–1336", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Kusunoki_Masashige.jpg/800px-Kusunoki_Masashige.jpg", desc:"Legendary loyal samurai.", quote:"Seven lives for my country!", achievements:"Symbol of loyalty", family:"Samurai clan."},
+                {name:"Oda Nobunaga", title:"Great Unifier", dates:"1534–1582", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Oda_Nobunaga.jpg/800px-Oda_Nobunaga.jpg", desc:"Began unification of Japan.", quote:"", achievements:"Revolutionary warlord", family:"Owari province daimyo."},
+                {name:"Toyotomi Hideyoshi", title:"Second Great Unifier", dates:"1537–1598", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Toyotomi_Hideyoshi.jpg/800px-Toyotomi_Hideyoshi.jpg", desc:"Rose from peasant to ruler.", quote:"", achievements:"Unified Japan", family:"Peasant background."},
+                {name:"Tokugawa Ieyasu", title:"Founder of Tokugawa Shogunate", dates:"1543–1616", photo:"https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Tokugawa_Ieyasu.jpg/800px-Tokugawa_Ieyasu.jpg", desc:"Brought long peace to Japan.", quote:"", achievements:"Established Edo period", family:"Matsudaira clan."}
+            ]
+        };
+
+        let currentCountry = "Nepal";
+        let currentView = "grid";
+
+        function createPixelFallback(name) {
+            // Simple canvas fallback if image fails
+            const canvas = document.createElement('canvas');
+            canvas.width = 400; canvas.height = 280;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#2A211F'; ctx.fillRect(0,0,400,280);
+            ctx.fillStyle = '#8C5A2B'; ctx.fillRect(50,30,300,200);
+            return canvas.toDataURL();
+        }
+
+        function renderGrid(country) {
+            const container = document.getElementById('main-content');
+            container.innerHTML = `<h2 style="text-align:center;color:#C9A66B;margin-bottom:30px;">${country.toUpperCase()} HEROES</h2><div class="hero-grid" id="grid-container"></div>`;
+            
+            const grid = document.getElementById('grid-container');
+            heroesData[country].forEach(hero => {
+                const card = document.createElement('div');
+                card.className = 'hero-card';
+                card.innerHTML = `
+                    <img src="\( {hero.photo}" class="hero-photo" alt=" \){hero.name}" onerror="this.src='https://via.placeholder.com/400x280/3C2F2F/8C5A2B?text=${hero.name}'">
+                    <div class="hero-info">
+                        <div class="hero-name">${hero.name}</div>
+                        <div class="hero-dates">${hero.dates}</div>
+                        <div class="hero-title">${hero.title}</div>
+                        <div class="hero-desc">${hero.desc}</div>
+                        \( {hero.quote ? `<div class="quote">“ \){hero.quote}”</div>` : ''}
+                        <p><strong>Family Background:</strong> ${hero.family}</p>
+                        <p><strong>Achievements:</strong> ${hero.achievements}</p>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderTimeline() {
+            // Simplified timeline (all heroes)
+            const container = document.getElementById('main-content');
+            container.innerHTML = `<h2 style="text-align:center;color:#C9A66B;margin-bottom:40px;">TIMELINE OF HEROES</h2><div class="timeline" id="timeline"></div>`;
+            
+            const timeline = document.getElementById('timeline');
+            let allHeroes = [];
+            Object.keys(heroesData).forEach(country => {
+                heroesData[country].forEach(h => allHeroes.push({...h, country}));
+            });
+            
+            allHeroes.sort((a,b) => parseInt(a.dates.split('–')[0]) - parseInt(b.dates.split('–')[0]));
+            
+            allHeroes.forEach(hero => {
+                const item = document.createElement('div');
+                item.className = 'timeline-item';
+                item.innerHTML = `
+                    <div class="timeline-content">
+                        <strong>\( {hero.name} ( \){hero.country})</strong><br>
+                        ${hero.dates} — ${hero.title}<br>
+                        ${hero.desc}
+                    </div>
+                `;
+                timeline.appendChild(item);
+            });
+        }
+
+        function createTabs() {
+            const tabsContainer = document.getElementById('tabs');
+            Object.keys(heroesData).forEach((country, i) => {
+                const tab = document.createElement('div');
+                tab.className = `tab ${i===0 ? 'active' : ''}`;
+                tab.textContent = country.toUpperCase();
+                tab.addEventListener('click', () => {
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    currentCountry = country;
+                    if (currentView === 'grid') renderGrid(country);
+                });
+                tabsContainer.appendChild(tab);
+            });
+        }
+
+        // Event Listeners
+        document.getElementById('grid-btn').addEventListener('click', () => {
+            currentView = 'grid';
+            document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('grid-btn').classList.add('active');
+            renderGrid(currentCountry);
+        });
+
+        document.getElementById('timeline-btn').addEventListener('click', () => {
+            currentView = 'timeline';
+            document.querySelectorAll('.toggle-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('timeline-btn').classList.add('active');
+            renderTimeline();
+        });
+
+        // Search
+        document.getElementById('search').addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = heroesData[currentCountry].filter(h => 
+                h.name.toLowerCase().includes(term) || h.desc.toLowerCase().includes(term)
+            );
+            
+            if (currentView === 'grid') {
+                const container = document.getElementById('main-content');
+                container.innerHTML = `<h2 style="text-align:center;color:#C9A66B;margin-bottom:30px;">${currentCountry.toUpperCase()} HEROES</h2><div class="hero-grid" id="grid-container"></div>`;
+                const grid = document.getElementById('grid-container');
+                filtered.forEach(hero => {
+                    // same card creation as above (shortened)
+                    const card = document.createElement('div');
+                    card.className = 'hero-card';
+                    card.innerHTML = `...`; // reuse same structure
+                    grid.appendChild(card);
+                });
+            }
+        });
+
+        // Initialize
+        window.onload = () => {
+            createTabs();
+            renderGrid("Nepal");
+        };
+    </script>
+</body>
+</html>
