@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUPER MARIO BROS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+        
+        body {
+            font-family: 'Press Start 2P', system-ui;
+            image-rendering: pixelated;
+        }
+        
+        canvas {
+            image-rendering: pixelated;
+            border: 12px solid #000;
+            box-shadow: 0 25px 50px -12px rgb(0 0 0);
+        }
+        
+        .mario-text {
+            text-shadow: 6px 6px 0 #000,
+                        -3px -3px 0 #000,
+                        3px -3px 0 #000,
+                        -3px 3px 0 #000;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-blue-500 to-blue-700 min-h-screen text-white overflow-hidden">
+    <div class="max-w-[900px] mx-auto">
+        <!-- HUD -->
+        <div class="bg-black border-b-8 border-white p-4 flex justify-between items-center text-sm">
+            <div class="flex items-center gap-6">
+                <div>
+                    <div class="text-yellow-400 text-xs">MARIO</div>
+                    <div id="score" class="text-4xl tabular-nums">000000</div>
+                </div>
+                <div>
+                    <div class="text-xs">COINS</div>
+                    <div id="coins" class="text-3xl flex items-center gap-1">×00</div>
+                </div>
+            </div>
+            
+            <div class="text-center">
+                <div class="text-5xl text-yellow-300 mario-text tracking-widest">SUPER MARIO</div>
+                <div class="text-xs text-yellow-200">WORLD 1-1</div>
+            </div>
+            
+            <div class="flex items-center gap-6">
+                <div>
+                    <div class="text-xs">TIME</div>
+                    <div id="time" class="text-4xl tabular-nums text-right">400</div>
+                </div>
+                <div class="flex gap-1" id="livesContainer">
+                    ❤️❤️❤️
+                </div>
+            </div>
+        </div>
+
+        <!-- Game -->
+        <div class="relative bg-black p-4">
+            <canvas id="game" width="800" height="480" class="mx-auto bg-[#5C94FC]"></canvas>
+            
+            <!-- Start Screen -->
+            <div id="startScreen" class="absolute inset-0 flex items-center justify-center bg-black/80 z-20">
+                <div class="text-center">
+                    <h1 class="text-7xl mario-text text-yellow-300 mb-8">SUPER MARIO BROS</h1>
+                    <button onclick="startGame()" 
+                            class="px-16 py-8 bg-red-600 hover:bg-red-700 text-3xl border-8 border-white font-bold active:scale-95 transition">
+                        PRESS START
+                    </button>
+                    <p class="mt-12 text-sm">← → Move &nbsp;&nbsp; SPACE Jump &nbsp;&nbsp; CTRL Run</p>
+                </div>
+            </div>
+
+            <!-- Game Over -->
+            <div id="gameOver" class="hidden absolute inset-0 flex items-center justify-center bg-black/90 z-30">
+                <div class="text-center">
+                    <h2 class="text-6xl text-red-500 mario-text mb-4">GAME OVER</h2>
+                    <p id="finalScoreText" class="text-2xl mb-8"></p>
+                    <button onclick="restartGame()" 
+                            class="px-12 py-6 bg-white text-black text-2xl font-bold border-8 border-black hover:bg-yellow-300">
+                        TRY AGAIN
+                    </button>
+                </div>
+            </div>
+
+            <!-- Win Screen -->
+            <div id="winScreen" class="hidden absolute inset-0 flex items-center justify-center bg-black/90 z-30">
+                <div class="text-center">
+                    <h2 class="text-6xl text-yellow-300 mario-text mb-4">STAGE CLEAR!</h2>
+                    <button onclick="nextLevel()" class="px-12 py-6 bg-green-600 text-2xl font-bold">NEXT STAGE</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+        
+        let score = 0;
+        let coinsCollected = 0;
+        let timeLeft = 400;
+        let lives = 3;
+        let gameRunning = false;
+        let paused = false;
+        let cameraX = 0;
+        
+        // Mario
+        let mario = {
+            x: 80,
+            y: 300,
+            vx: 0,
+            vy: 0,
+            width: 38,
+            height: 48,
+            onGround: false,
+            facingRight: true,
+            frame: 0,
+            state: 'idle' // idle, run, jump
+        };
+        
+        const GRAVITY = 0.85;
+        const FRICTION = 0.82;
+        
+        let keys = {};
+        
+        // Level Data
+        let platforms = [
+            {x: 0, y: 420, w: 2400, h: 60},           // ground
+            {x: 400, y: 320, w: 160, h: 20},
+            {x: 680, y: 240, w: 140, h: 20},
+            {x: 920, y: 340, w: 180, h: 20},
+            {x: 1250, y: 280, w: 120, h: 20},
+            {x: 1550, y: 180, w: 100, h: 20},
+            {x: 1750, y: 320, w: 200, h: 20},
+            {x: 2100, y: 260, w: 160, h: 20}
+        ];
+        
+        let coins = [
+            {x: 450, y: 280, collected: false},
+            {x: 720, y: 190, collected: false},
+            {x: 780, y: 190, collected: false},
+            {x: 960, y: 290, collected: false},
+            {x: 1300, y: 220, collected: false},
+            {x: 1580, y: 130, collected: false},
+            {x: 1800, y: 270, collected: false}
+        ];
+        
+        let enemies = [
+            {x: 600, y: 380, vx: -2.2, alive: true, type: 'goomba'},
+            {x: 1100, y: 380, vx: 2, alive: true, type: 'goomba'},
+            {x: 1650, y: 380, vx: -2.5, alive: true, type: 'goomba'},
+            {x: 1950, y: 380, vx: 1.8, alive: true, type: 'goomba'}
+        ];
+        
+        let flag = {x: 2350, y: 180};
+        
+        function drawBackground() {
+            ctx.fillStyle = '#5C94FC';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Hills
+            ctx.fillStyle = '#3a8e3a';
+            ctx.beginPath();
+            ctx.moveTo(-cameraX*0.2, 480);
+            ctx.quadraticCurveTo(200-cameraX*0.2, 320, 500-cameraX*0.2, 480);
+            ctx.fill();
+            
+            // Bushes & clouds
+            ctx.fillStyle = 'white';
+            for (let i = 0; i < 5; i++) {
+                let cx = (300 + i*550 - cameraX * 0.4) % 1200;
+                ctx.beginPath();
+                ctx.ellipse(cx, 100, 55, 25, 0, 0, Math.PI*2);
+                ctx.fill();
+            }
+        }
+        
+        function drawMario() {
+            ctx.save();
+            if (!mario.facingRight) ctx.scale(-1, 1);
+            
+            const drawX = mario.facingRight ? mario.x : -mario.x - mario.width;
+            
+            // Hat
+            ctx.fillStyle = '#E4000F';
+            ctx.fillRect(drawX + 6, mario.y + 8, 28, 10);
+            
+            // Face
+            ctx.fillStyle = '#FFDBB4';
+            ctx.fillRect(drawX + 10, mario.y + 16, 22, 16);
+            
+            // Eyes
+            ctx.fillStyle = '#000';
+            ctx.fillRect(drawX + 22, mario.y + 20, 6, 6);
+            
+            // Shirt
+            ctx.fillStyle = '#E4000F';
+            ctx.fillRect(drawX + 8, mario.y + 30, 26, 14);
+            
+            // Overalls
+            ctx.fillStyle = '#0033A0';
+            ctx.fillRect(drawX + 8, mario.y + 40, 26, 14);
+            
+            ctx.restore();
+        }
+        
+        function drawPlatforms() {
+            ctx.fillStyle = '#8B5A2B';
+            platforms.forEach(p => {
+                const sx = p.x - cameraX;
+                ctx.fillRect(sx, p.y, p.w, p.h);
+                ctx.fillStyle = '#C68A4E';
+                ctx.fillRect(sx + 8, p.y + 8, p.w - 16, p.h - 16);
+                ctx.fillStyle = '#8B5A2B';
+            });
+        }
+        
+        function drawCoins() {
+            coins.forEach(coin => {
+                if (coin.collected) return;
+                const sx = coin.x - cameraX;
+                ctx.fillStyle = '#F4C404';
+                ctx.beginPath();
+                ctx.ellipse(sx + 12, coin.y + 12, 13, 16, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#FFF200';
+                ctx.font = '16px monospace';
+                ctx.fillText('C', sx + 7, coin.y + 18);
+            });
+        }
+        
+        function drawEnemies() {
+            enemies.forEach(enemy => {
+                if (!enemy.alive) return;
+                const sx = enemy.x - cameraX;
+                
+                ctx.fillStyle = '#8B4513';
+                ctx.fillRect(sx + 4, enemy.y + 8, 32, 22); // body
+                
+                ctx.fillStyle = '#000';
+                ctx.fillRect(sx + 10, enemy.y + 14, 6, 8);
+                ctx.fillRect(sx + 24, enemy.y + 14, 6, 8);
+            });
+        }
+        
+        function drawFlag() {
+            const sx = flag.x - cameraX;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(sx, flag.y, 8, 220);
+            ctx.fillStyle = '#E4000F';
+            ctx.fillRect(sx + 8, flag.y, 40, 30);
+        }
+        
+        function updateMario() {
+            // Horizontal
+            let speed = keys['Control'] ? 6.5 : 4.8;
+            
+            if (keys['ArrowLeft'] || keys['a']) {
+                mario.vx = -speed;
+                mario.facingRight = false;
+            } else if (keys['ArrowRight'] || keys['d']) {
+                mario.vx = speed;
+                mario.facingRight = true;
+            } else {
+                mario.vx *= FRICTION;
+            }
+            
+            // Jump
+            if ((keys[' '] || keys['Space']) && mario.onGround) {
+                mario.vy = -18;
+                mario.onGround = false;
+            }
+            
+            mario.vy += GRAVITY;
+            mario.x += mario.vx;
+            mario.y += mario.vy;
+            
+            // Collision with platforms
+            mario.onGround = false;
+            for (let p of platforms) {
+                if (
+                    mario.x + mario.width > p.x &&
+                    mario.x < p.x + p.w &&
+                    mario.y + mario.height > p.y &&
+                    mario.y + mario.height - mario.vy <= p.y + 10
+                ) {
+                    mario.y = p.y - mario.height;
+                    mario.vy = 0;
+                    mario.onGround = true;
+                }
+            }
+            
+            // Camera
+            if (mario.x - cameraX > 450) cameraX = mario.x - 450;
+            if (cameraX < 0) cameraX = 0;
+        }
+        
+        function checkCollisions() {
+            // Coins
+            for (let coin of coins) {
+                if (coin.collected) continue;
+                if (Math.hypot(mario.x + 19 - coin.x, mario.y + 24 - coin.y) < 35) {
+                    coin.collected = true;
+                    score += 200;
+                    coinsCollected++;
+                    document.getElementById('coins').innerHTML = `×${coinsCollected.toString().padStart(2,'0')}`;
+                }
+            }
+            
+            // Enemies
+            for (let enemy of enemies) {
+                if (!enemy.alive) continue;
+                
+                if (
+                    mario.x < enemy.x + 38 &&
+                    mario.x + mario.width > enemy.x &&
+                    mario.y < enemy.y + 30 &&
+                    mario.y + mario.height > enemy.y
+                ) {
+                    if (mario.vy > 0 && mario.y + mario.height - 25 < enemy.y) {
+                        // Stomp
+                        enemy.alive = false;
+                        mario.vy = -14;
+                        score += 400;
+                    } else {
+                        // Damage
+                        lives--;
+                        updateHUD();
+                        if (lives <= 0) {
+                            gameOver();
+                        } else {
+                            resetPosition();
+                        }
+                    }
+                }
+            }
+            
+            // Flag
+            if (mario.x > flag.x - 30) {
+                winLevel();
+            }
+        }
+        
+        function updateHUD() {
+            document.getElementById('score').textContent = String(score).padStart(6, '0');
+            document.getElementById('time').textContent = Math.max(0, timeLeft);
+            document.getElementById('livesContainer').innerHTML = '❤️'.repeat(lives);
+        }
+        
+        function gameLoop() {
+            if (!gameRunning || paused) return;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            drawBackground();
+            drawPlatforms();
+            drawCoins();
+            drawEnemies();
+            drawFlag();
+            drawMario();
+            
+            updateMario();
+            checkCollisions();
+            
+            // Timer
+            if (Math.random() < 0.015) {
+                timeLeft--;
+                updateHUD();
+                if (timeLeft <= 0) gameOver();
+            }
+            
+            requestAnimationFrame(gameLoop);
+        }
+        
+        function resetPosition() {
+            mario.x = 80;
+            mario.y = 300;
+            mario.vx = 0;
+            mario.vy = 0;
+            cameraX = 0;
+        }
+        
+        function startGame() {
+            document.getElementById('startScreen').style.display = 'none';
+            gameRunning = true;
+            resetPosition();
+            gameLoop();
+        }
+        
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById('finalScoreText').innerHTML = `FINAL SCORE<br>${score}`;
+            document.getElementById('gameOver').classList.remove('hidden');
+        }
+        
+        function restartGame() {
+            score = 0;
+            coinsCollected = 0;
+            timeLeft = 400;
+            lives = 3;
+            updateHUD();
+            document.getElementById('gameOver').classList.add('hidden');
+            coins.forEach(c => c.collected = false);
+            enemies.forEach(e => e.alive = true);
+            resetPosition();
+            gameRunning = true;
+            gameLoop();
+        }
+        
+        function winLevel() {
+            gameRunning = false;
+            score += 1000;
+            updateHUD();
+            document.getElementById('winScreen').classList.remove('hidden');
+        }
+        
+        function nextLevel() {
+            alert("🎉 Congratulations! You've completed the demo stage.\n\nThis is a high-quality fan recreation made purely with HTML, CSS & JavaScript.");
+            restartGame();
+        }
+        
+        // Controls
+        window.addEventListener('keydown', e => {
+            keys[e.key] = true;
+        });
+        
+        window.addEventListener('keyup', e => {
+            keys[e.key] = false;
+        });
+        
+        // Touch support
+        canvas.addEventListener('touchstart', () => {
+            if (mario.onGround && gameRunning) mario.vy = -18;
+        });
+        
+        console.log("%cSuper Mario Bros - Fully playable HTML5 version ready!", "color:#E4000F; font-size:18px");
+    </script>
+</body>
+  </html>
